@@ -60,4 +60,3 @@ drs:
     tokenUri: "<path:essential-services/data/daps-register-svc-pen#tokenUri>"
     jwkSetUri: "<path:essential-services/data/daps-register-svc-pen#jwk-set-uri>"
     
-
