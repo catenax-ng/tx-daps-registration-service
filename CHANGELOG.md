@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 NA
 
+## [2.0.0] - 2023-03-20
+
+### Changed
+ - Changed the base image
+
+### Removed
+ - properties from deployment
+
 ## [2.0.0] - 2023-03-16
 
 ### Changed

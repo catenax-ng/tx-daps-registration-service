@@ -1,4 +1,4 @@
-## Installation Steps:-
+## Installation Steps:
 
 Helm charts are provided inside https://github.com/eclipse-tractusx/daps-registration-service
 
@@ -15,17 +15,15 @@ Helm charts are provided inside https://github.com/eclipse-tractusx/daps-registr
 
 2.) Local installation:
 
-    a.) git clone https://github.com/eclipse-tractusx/daps-registration-service.git <br />
+    a.) git clone https://github.com/eclipse-tractusx/daps-registration-service.git
     b.) Modify values file according to your requirement.
     c.) You need to define the secrets as well in values.yaml
         secret:
           clientId:  -> Client id for DAPS.   
           clientSecret:   -> Client Secret for DAPS
-          authServerUrl:   -> Auth URL for keycloak
-          realm:   -> Realm for portal keycloak
-          resource:   -> Resource for portal keycloak
           apiUri:  ->   DAPS API URL
           tokenUri:   -> DAPS token URL
+          jwk-set-uri: -> JWK URI
 
     d.) These secrets should be defined in Hashicorp vault
     e.) Deploy in a kubernetes cluster

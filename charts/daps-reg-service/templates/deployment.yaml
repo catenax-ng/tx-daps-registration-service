@@ -48,21 +48,6 @@ spec:
               secretKeyRef:
                 name: {{ include "daps-reg-service.applicationSecret.name" . }}
                 key: ClientSecret
-          - name: KEYCLOAK_AUTH-SERVER-URL
-            valueFrom: 
-              secretKeyRef:
-                name: {{ include "daps-reg-service.applicationSecret.name" . }}
-                key: authServerUrl
-          - name: KEYCLOAK_REALM
-            valueFrom: 
-              secretKeyRef:
-                name: {{ include "daps-reg-service.applicationSecret.name" . }}
-                key: realm
-          - name: KEYCLOAK_RESOURCE
-            valueFrom: 
-              secretKeyRef:
-                name: {{ include "daps-reg-service.applicationSecret.name" . }}
-                key: resource
           - name: APP_DAPS_APIURI
             valueFrom: 
               secretKeyRef:
