@@ -65,4 +65,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Moved helm charts from `deployment/helm` to `charts`
 
 ### Removed
-- Controller has been removed
+- Controller has been removed 
