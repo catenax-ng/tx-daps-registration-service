@@ -136,7 +136,9 @@ certificate. Static data contains JWKS url by default. Here is an example:
 
 ```
     {
-        "daps_jwks": "https://daps.int.demo.catena-x.net/jwks.json",
+        "daps": {
+            "jwks": "https://daps.int.demo.catena-x.net/jwks.json"
+        },
         "clientId" : "65:FA:DE:C2:6A..."
     }
 ```
