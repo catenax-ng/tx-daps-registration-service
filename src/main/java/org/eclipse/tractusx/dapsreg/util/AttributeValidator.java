@@ -37,5 +37,4 @@ public class AttributeValidator {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "does not match the pattern");
         }
     }
-
 }

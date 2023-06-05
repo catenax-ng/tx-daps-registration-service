@@ -58,4 +58,3 @@ logging:
         security:
           web:
             csrf: INFO
-

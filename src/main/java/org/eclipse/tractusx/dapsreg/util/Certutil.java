@@ -38,7 +38,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 public class Certutil {
-
     private Certutil() {
         throw new IllegalStateException("Utility class");
     }
