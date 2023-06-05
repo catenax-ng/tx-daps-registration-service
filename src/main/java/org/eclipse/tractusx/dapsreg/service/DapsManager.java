@@ -58,7 +58,6 @@ public class DapsManager implements DapsApiDelegate {
     private final StaticJson staticJson;
     private final AttributeValidator attributeValidator;
 
-
     @SneakyThrows
     @Override
     @PreAuthorize("hasAuthority(@securityRoles.createRole)")
@@ -90,7 +89,7 @@ public class DapsManager implements DapsApiDelegate {
     @Override
     @PreAuthorize("hasAuthority(@securityRoles.retrieveRole)")
     public synchronized ResponseEntity<Map<String, Object>> getClientGet(String clientId) {
-        var jsonNode = dapsClient.getClient(clientId);
+        var jsonNode = dapsClient.getClient(clientId).orElseThrow();
         Map<String, Object> result = mapper.convertValue(jsonNode, new TypeReference<>() {});
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

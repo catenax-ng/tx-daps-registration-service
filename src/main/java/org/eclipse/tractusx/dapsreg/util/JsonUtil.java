@@ -48,7 +48,7 @@ public class JsonUtil {
     }
 
     public JsonNode getClientJson(String clientId, String clientName,
-                                  String securityProfile, String referringConnector) {
+                                    String securityProfile, String referringConnector) {
         attributeValidator.validate(clientId);
         attributeValidator.validate(clientName);
         attributeValidator.validate(securityProfile);

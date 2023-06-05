@@ -67,7 +67,9 @@ class DapsregE2eTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
-        return mapper.readValue(contentAsString, JsonNode.class);
+        var response = mapper.readValue(contentAsString, JsonNode.class);
+        //System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(response));
+        return response;
     }
 
 
@@ -145,6 +147,49 @@ class DapsregE2eTest {
             clientId = Certutil.getClientId(cert);
             MockMultipartFile pemFile = new MockMultipartFile("file", "test.crt", "text/plain", pem.getBytes());
             var createResultString = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/daps")
+                        .file(pemFile)
+                        .param("clientName", "bmw preprod")
+                        .param("referringConnector", "http://connector.cx-preprod.edc.aws.bmw.cloud/BPN1234567890"))
+                    .andDo(print())
+                    .andExpect(status().isCreated())
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.clientId").value(clientId))
+                    .andExpect(MockMvcResultMatchers.jsonPath("$.daps_jwks").value("https://daps1.int.demo.catena-x.net/jwks.json"))
+                    .andReturn().getResponse().getContentAsString();
+            var createResultJson = mapper.readTree(createResultString);
+            assertThat(createResultJson.get("clientId").asText()).isEqualTo(clientId);
+            var orig = getClient(clientId);
+            assertThat(orig.get("name").asText()).isEqualTo("bmw preprod");
+            mockMvc.perform(put("/api/v1/daps/".concat(clientId))
+                        .param("referringConnector", "http://connector.cx-preprod.edc.aws.bmw.cloud/BPN0987654321")
+                        .param("email", "admin@test.com"))
+                    .andDo(print())
+                    .andExpect(status().isOk());
+            var changed = getClient(clientId);
+            var referringConnector = StreamSupport.stream(changed.get("attributes").spliterator(), false)
+                    .filter(jsonNode -> jsonNode.get("key").asText().equals("referringConnector")).findAny().orElseThrow();
+            assertThat(referringConnector.get("value").asText()).isEqualTo("http://connector.cx-preprod.edc.aws.bmw.cloud/BPN0987654321");
+            var email = StreamSupport.stream(changed.get("attributes").spliterator(), false)
+                    .filter(jsonNode -> jsonNode.get("key").asText().equals("email")).findAny().orElseThrow();
+            assertThat(email.get("value").asText()).isEqualTo("admin@test.com");
+        } finally {
+            if (!Objects.isNull(clientId)) {
+                mockMvc.perform(delete("/api/v1/daps/".concat(clientId)))
+                        .andDo(print())
+                        .andExpect(status().is2xxSuccessful());
+            }
+        }
+    }
+
+    @Test
+    @WithMockUser(username = "fulladmin", authorities={"create_daps_client", "update_daps_client", "delete_daps_client", "retrieve_daps_client"})
+    void createTwoSameExpectErrorTest() throws Exception {
+        String clientId = null;
+        try (var pemStream = Resources.getResource("test.crt").openStream()) {
+            var pem = new String(pemStream.readAllBytes());
+            var cert = Certutil.loadCertificate(pem);
+            clientId = Certutil.getClientId(cert);
+            MockMultipartFile pemFile = new MockMultipartFile("file", "test.crt", "text/plain", pem.getBytes());
+            var createResultString = mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/daps")
                             .file(pemFile)
                             .param("clientName", "bmw preprod")
                             .param("referringConnector", "http://connector.cx-preprod.edc.aws.bmw.cloud/BPN1234567890"))
@@ -157,18 +202,12 @@ class DapsregE2eTest {
             assertThat(createResultJson.get("clientId").asText()).isEqualTo(clientId);
             var orig = getClient(clientId);
             assertThat(orig.get("name").asText()).isEqualTo("bmw preprod");
-            mockMvc.perform(put("/api/v1/daps/".concat(clientId))
-                            .param("referringConnector", "http://connector.cx-preprod.edc.aws.bmw.cloud/BPN0987654321")
-                            .param("email", "admin@test.com"))
+            mockMvc.perform(MockMvcRequestBuilders.multipart("/api/v1/daps")
+                            .file(pemFile)
+                            .param("clientName", "bmw preprod")
+                            .param("referringConnector", "http://connector.cx-preprod.edc.aws.bmw.cloud/BPN1234567890"))
                     .andDo(print())
-                    .andExpect(status().isOk());
-            var changed = getClient(clientId);
-            var referringConnector = StreamSupport.stream(changed.get("attributes").spliterator(), false)
-                    .filter(jsonNode -> jsonNode.get("key").asText().equals("referringConnector")).findAny().orElseThrow();
-            assertThat(referringConnector.get("value").asText()).isEqualTo("http://connector.cx-preprod.edc.aws.bmw.cloud/BPN0987654321");
-            var email = StreamSupport.stream(changed.get("attributes").spliterator(), false)
-                    .filter(jsonNode -> jsonNode.get("key").asText().equals("email")).findAny().orElseThrow();
-            assertThat(email.get("value").asText()).isEqualTo("admin@test.com");
+                    .andExpect(status().is(400));
         } finally {
             if (!Objects.isNull(clientId)) {
                 mockMvc.perform(delete("/api/v1/daps/".concat(clientId)))

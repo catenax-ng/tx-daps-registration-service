@@ -32,12 +32,12 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 public class Certutil {
-
     private Certutil() {
         throw new IllegalStateException("Utility class");
     }
@@ -59,7 +59,7 @@ public class Certutil {
     }
 
     public static String createSki(X509Certificate cert) throws NoSuchAlgorithmException {
-        var publicKey = cert.getPublicKey();
+        PublicKey publicKey = cert.getPublicKey();
         var r = new JcaX509ExtensionUtils().createSubjectKeyIdentifier(publicKey).getKeyIdentifier();
         return BaseEncoding.base16().upperCase().withSeparator(":", 2).encode(r);
     }
